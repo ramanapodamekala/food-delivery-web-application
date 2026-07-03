@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BGMI Store</title>
+
+<style>
+
+body{
+margin:1;
+font-family:Arial;
+background:
+linear-gradient(rgba(0,0,0,0.8),rgba(0,0,0,0.8)),
+url("https://wallpapercave.com/wp/wp6787124.jpg");
+background-size:cover;
+color:white;
+}
+
+
+.header{
+
+background:linear-gradient(90deg,#8B0000,#FFD700);
+
+padding:20px;
+
+text-align:center;
+
+font-size:35px;
+
+font-weight:bold;
+
+}
+
+
+.form{
+
+background:rgba(0,0,0,0.7);
+
+margin:30px;
+
+padding:25px;
+
+border-radius:20px;
+
+border:2px solid gold;
+
+}
+
+
+input{
+
+padding:12px;
+
+margin:10px;
+
+width:250px;
+
+border-radius:10px;
+
+}
+
+
+button{
+
+background:gold;
+
+color:#8B0000;
+
+font-weight:bold;
+
+border:none;
+
+padding:10px 20px;
+
+border-radius:10px;
+
+cursor:pointer;
+
+}
+
+
+.products{
+
+display:flex;
+
+flex-wrap:wrap;
+
+gap:30px;
+
+padding:30px;
+
+}
+
+
+.card{
+
+background:linear-gradient(#111,#660000);
+
+width:230px;
+
+padding:20px;
+
+text-align:center;
+
+border-radius:20px;
+
+border:2px solid gold;
+
+box-shadow:0 0 20px red;
+
+}
+
+
+.card img{
+
+width:180px;
+
+height:180px;
+
+object-fit:cover;
+
+border-radius:10px;
+
+}
+
+
+.price{
+
+font-size:22px;
+
+color:gold;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="header">
+
+ CLONE STORE
+
+</div>
+
+
+
+<div class="form">
+
+<h2>Add Product</h2>
+
+
+<input id="name" placeholder="Product Name">
+
+
+<input id="price" placeholder="Price">
+
+
+<input id="imageUrl" placeholder="Image URL">
+
+
+<button onclick="saveProduct()">Save</button>
+
+
+</div>
+
+
+
+<h2 style="margin-left:30px;">Products</h2>
+
+
+<div id="list" class="products"></div>
+
+
+
+
+<script>
+
+
+function saveProduct(){
+
+
+let product={
+
+name:document.getElementById("name").value,
+
+price:document.getElementById("price").value,
+
+imageUrl:document.getElementById("imageUrl").value
+
+};
+
+fetch("/products",{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+body:JSON.stringify(product)
+
+
+})
+
+.then(response=>response.json())
+.then(data=>{
+
+	alert("Product Added");
+
+	document.getElementById("name").value="";
+	document.getElementById("price").value="";
+	document.getElementById("imageUrl").value="";
+
+	getProducts();
+
+	});
+
+
+}
+
+
+
+
+function getProducts(){
+
+
+fetch("/products")
+
+
+.then(response=>response.json())
+
+
+.then(data=>{
+
+
+let list=document.getElementById("list");
+
+
+list.innerHTML="";
+
+
+
+data.forEach(product=>{
+
+
+list.innerHTML +=
+
+
+`
+
+<div class="card">
+
+
+<img src="${product.imageUrl}">
+
+
+<h2>${product.name}</h2>
+
+
+<p class="price">RS. $;
+${product.price}</p>
+
+
+<button onclick="deleteProduct(${product.id})">
+
+Delete
+
+</button>
+
+
+</div>
+
+`;
+
+
+});
+
+
+});
+
+
+}
+
+
+
+
+function deleteProduct(id){
+
+
+fetch("/products/"+id,{
+
+method:"DELETE"
+
+})
+
+.then(()=>{
+
+getProducts();
+
+});
+
+
+}
+
+
+
+getProducts();
+
+
+</script>
+
+
+</body>
+
+</html>
